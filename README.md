@@ -4,7 +4,7 @@ Dashboard gerencial mensal da BR Mobility, consolidando indicadores operacionais
 
 ## Versão atual
 
-- Período consolidado: janeiro a setembro de 2026
+- Período consolidado: janeiro a outubro de 2026
 - Arquivo principal: `index.html`
 
 ## Como visualizar
