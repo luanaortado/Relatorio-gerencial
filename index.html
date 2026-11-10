@@ -493,7 +493,7 @@ const LUCROS_MESES_PAGOS=10;         // Jan a Out
 const LUCROS_ACUM=LUCROS_MES*LUCROS_MESES_PAGOS; // R$ 1.200.000 Jan–Out
 
 // ─── DESPESAS OPERACIONAIS (Central Analítica) ──────────────────────────────
-// Inclui Descontos Concedidos como linha própria; total soma os 4 itens.
+// Inclui Descontos Concedidos como linha própria; transportadoras considera o valor líquido de reembolsos.
 const DESP_OP={
   jan:{transp:27916.28,ats:16974.67,correios:1721.83,descontos:1815.95,fat:661557.44},
   fev:{transp:8396.77, ats:12995.80,correios:5795.79,descontos:0,       fat:658323.81},
@@ -508,8 +508,8 @@ const DESP_OP_NOTAS={
   jan:'A despesa operacional de Janeiro ficou um pouco acima do padrão porque parte dos pagamentos que ocorreriam em Dezembro/2025 foi deslocada para Janeiro/2026.',
   abr:'O aumento das despesas operacionais de Abril, em logística de veículos e peças, foi impactado pela ocorrência com o veículo no Shopping Barra, que elevou os custos de transporte e reposição.'
 };
-function despOpMonth(m){const x=DESP_OP[m];if(!x)return null;const tot=(x.logisticaDre||0)+x.ats+x.descontos;return {...x,total:tot};}
-function despOpAll(){const acc={logisticaDre:0,transp:0,correios:0,restituido:0,transpLiquido:0,ats:0,descontos:0,fat:0};months.forEach(m=>{const x=DESP_OP[m];if(x){acc.logisticaDre+=x.logisticaDre||0;acc.transp+=x.transp||0;acc.correios+=x.correios||0;acc.restituido+=x.restituido||0;acc.transpLiquido+=x.transpLiquido||0;acc.ats+=x.ats||0;acc.descontos+=x.descontos||0;acc.fat+=x.fat||0;}});acc.total=acc.logisticaDre+acc.ats+acc.descontos;return acc;}
+function despOpMonth(m){const x=DESP_OP[m];if(!x)return null;const totalDre=(x.logisticaDre||0)+x.ats+x.descontos;const total=(x.transpLiquido||0)+x.correios+x.ats+x.descontos;return {...x,total,totalDre};}
+function despOpAll(){const acc={logisticaDre:0,transp:0,correios:0,restituido:0,transpLiquido:0,ats:0,descontos:0,fat:0};months.forEach(m=>{const x=DESP_OP[m];if(x){acc.logisticaDre+=x.logisticaDre||0;acc.transp+=x.transp||0;acc.correios+=x.correios||0;acc.restituido+=x.restituido||0;acc.transpLiquido+=x.transpLiquido||0;acc.ats+=x.ats||0;acc.descontos+=x.descontos||0;acc.fat+=x.fat||0;}});acc.totalDre=acc.logisticaDre+acc.ats+acc.descontos;acc.total=acc.transpLiquido+acc.correios+acc.ats+acc.descontos;return acc;}
 
 // ─── DESTAQUES EXECUTIVOS (resumo 30s) ──────────────────────────────────────
 const EXEC={
@@ -599,7 +599,7 @@ const DRE_OFICIAL_OUT={"jan":{"administrativo":{"total":127987.24,"pct":24.8,"it
 Object.entries(DRE_OFICIAL_OUT).forEach(([m,v])=>DRE_DETALHE[m]=v);
 const LOGISTICA_DRE_OFICIAL={"jan":{"logisticaDre":31600.39,"transp":29878.56,"correios":1721.83,"restituido":0,"transpLiquido":29878.56,"ats":16974.67,"descontos":1815.95,"fat":661557.44},"fev":{"logisticaDre":19058.77,"transp":13262.98,"correios":5795.79,"restituido":0,"transpLiquido":13262.98,"ats":12995.8,"descontos":0,"fat":658323.81},"mar":{"logisticaDre":9593.94,"transp":6362.51,"correios":3231.43,"restituido":0,"transpLiquido":6362.51,"ats":14879.14,"descontos":8628.41,"fat":665968.97},"abr":{"logisticaDre":26570.55,"transp":22284.64,"correios":4285.91,"restituido":2397.64,"transpLiquido":19887.0,"ats":16300.92,"descontos":12658.6,"fat":665202.69},"mai":{"logisticaDre":22988.8,"transp":17832.99,"correios":5155.81,"restituido":0,"transpLiquido":17832.99,"ats":17934.87,"descontos":5453.38,"fat":672777.0},"jun":{"logisticaDre":26280.12,"transp":20846.65,"correios":5433.47,"restituido":2515.09,"transpLiquido":18331.56,"ats":11978.69,"descontos":1809.72,"fat":678100.0},"jul":{"logisticaDre":23409.81,"transp":17827.95,"correios":5581.86,"restituido":7694.81,"transpLiquido":10133.14,"ats":17791.56,"descontos":0,"fat":630295.31},"aug":{"logisticaDre":31072.66,"transp":25930.66,"correios":5142.0,"restituido":1383.43,"transpLiquido":24547.23,"ats":13299.13,"descontos":0,"fat":531393.39},"sep":{"logisticaDre":28382.54,"transp":23774.53,"correios":4608.01,"restituido":4841.96,"transpLiquido":18932.57,"ats":9537.99,"descontos":339.28,"fat":535053.29},"oct":{"logisticaDre":21586.88,"transp":18715.52,"correios":2871.36,"restituido":2083.36,"transpLiquido":16632.16,"ats":16121.11,"descontos":0,"fat":541535.93}};
 Object.entries(LOGISTICA_DRE_OFICIAL).forEach(([m,v])=>Object.assign(DESP_OP[m]||(DESP_OP[m]={}),v));
-DESP_OP_ITENS.splice(0,DESP_OP_ITENS.length,['logisticaDre','Transportadoras + Correios (DRE)'],['ats','Gastos com ATs'],['descontos','Descontos Concedidos']);
+DESP_OP_ITENS.splice(0,DESP_OP_ITENS.length,['transpLiquido','Transportadoras'],['correios','Correios'],['ats','Gastos com ATs'],['descontos','Descontos Concedidos']);
 EXEC.oct={novosQtd:5,novosVal:8150,distratosQtd:2,distratosVal:3855.42,reajustesAprovados:4,reajustesVal:298.06,receitaPontualTotal:19066.92,avanco:'SLA melhorou 3,2 p.p. e a frota voltou a crescer, com cinco novos veículos no mês.',risco:'SLA permanece abaixo de 85% e o Amazonas registrou TMA de 19,5 dias.'};
 // ─── FIM ATUALIZAÇÃO OFICIAL — OUTUBRO/2026 ───────────────────────────
 
@@ -1535,19 +1535,11 @@ function renderDespesasOp(){
   const itens=DESP_OP_ITENS.map(([k,nome])=>({nome,val:data[k],pct_fat:data.fat>0?(data[k]/data.fat*100):0}));
   const tot=data.total;
   const maior=[...itens].sort((a,b)=>b.val-a.val)[0];
-  const rows=isAll
-    ?itens.map(it=>`<tr><td class="val">${it.nome}</td><td class="val neg">${fmtC(it.val)}</td><td>${it.pct_fat.toFixed(2)}%</td></tr>`).join('')
-    :[
-      ['Transportadoras — valor pago',data.transp,'neg'],
-      ['Transportadoras — valor reembolsado',data.restituido||0,'pos'],
-      ['Correios',data.correios,'neg'],
-      ['Gastos com ATs',data.ats,'neg'],
-      ['Descontos Concedidos',data.descontos,'neg']
-    ].map(([nome,val,classe])=>`<tr><td class="val">${nome}</td><td class="val ${classe}">${fmtC(val)}</td><td>${data.fat>0?(val/data.fat*100).toFixed(2):'0.00'}%</td></tr>`).join('');
+  const rows=itens.map(it=>`<tr><td class="val">${it.nome}</td><td class="val neg">${fmtC(it.val)}</td><td>${it.pct_fat.toFixed(2)}%</td></tr>`).join('');
   const serie=k=>months.map(m=>DESP_OP[m]?DESP_OP[m][k]:null);
 
   document.getElementById('main-content').innerHTML=`
-  ${isAll?`<div style="margin-bottom:16px;padding:10px 14px;background:var(--purple-dim);border:1px solid rgba(155,109,255,0.25);border-radius:8px;display:flex;align-items:center;gap:10px"><span style="font-size:16px">📅</span><div><strong style="color:var(--purple)">Despesas Operacionais Consolidadas — Jan a Out 2026</strong><span style="color:var(--muted2);font-size:12px;margin-left:8px">Soma dos 10 meses · logística conciliada com a DRE</span></div></div>`:''}
+  ${isAll?`<div style="margin-bottom:16px;padding:10px 14px;background:var(--purple-dim);border:1px solid rgba(155,109,255,0.25);border-radius:8px;display:flex;align-items:center;gap:10px"><span style="font-size:16px">📅</span><div><strong style="color:var(--purple)">Despesas Operacionais Consolidadas — Jan a Out 2026</strong><span style="color:var(--muted2);font-size:12px;margin-left:8px">Soma dos 10 meses · transportadoras líquidas dos reembolsos</span></div></div>`:''}
   <div class="grid g4" style="margin-bottom:16px">
     <div class="card card-sm"><div class="card-title">Total Desp. Operacionais</div><div class="kpi-val red">${fmtC(tot)}</div><div class="kpi-sub">${data.fat>0?(tot/data.fat*100).toFixed(2):'—'}% do faturamento</div></div>
     <div class="card card-sm"><div class="card-title">Maior Item</div><div class="kpi-val blue">${maior.nome}</div><div class="kpi-sub">${fmtC(maior.val)}</div></div>
@@ -1562,20 +1554,21 @@ function renderDespesasOp(){
     <div class="card-title-lg">Detalhamento — ${label}</div>
     <table class="tbl"><thead><tr><th>Item</th><th>Valor</th><th>% Faturamento</th></tr></thead><tbody>${rows}</tbody></table>
     <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
-      <span style="font-size:12px;font-weight:600;color:var(--text)">Total (inclui Descontos Concedidos)</span>
+      <span style="font-size:12px;font-weight:600;color:var(--text)">Total operacional líquido</span>
       <span style="font-size:14px;font-weight:700;color:var(--pink)">${fmtC(tot)}</span>
     </div>
-    ${!isAll?`<div style="margin-top:10px;font-size:11px;color:var(--muted2)">O total contábil considera Transportadoras pagas + Correios + ATs + Descontos. O valor reembolsado é exibido separadamente para acompanhamento gerencial e não é somado nem deduzido novamente da DRE.</div>`:''}
+    ${!isAll?`<div style="margin-top:12px;padding:10px 12px;background:var(--teal-dim);border:1px solid rgba(66,148,167,.25);border-radius:8px;font-size:11px;line-height:1.55;color:var(--muted2)"><strong style="color:var(--teal)">ℹ️ Cálculo de Transportadoras:</strong> ${fmtC(data.transp)} pagos − ${fmtC(data.restituido||0)} reembolsados = <strong style="color:var(--text)">${fmtC(data.transpLiquido)}</strong> de despesa operacional. ${data.restituido?`Por isso, o total operacional fica ${fmtC(data.restituido)} abaixo da DRE (${fmtC(data.totalDre)}), que registra o pagamento integral.`:'Não houve reembolso no mês; portanto, a despesa operacional coincide com o valor pago.'}</div>`:''}
   </div>
   ${isAll?`<div class="card" style="margin-top:16px"><div class="card-title-lg">Comparativo Mensal Jan–Out</div>
-    <table class="tbl"><thead><tr><th>Mês</th><th class="val">Transportadoras + Correios (DRE)</th><th class="val">Transportadoras</th><th class="val">Correios</th><th class="val">Restituído</th><th class="val">Líquido gerencial</th><th class="val">ATs</th><th class="val">Descontos</th><th class="val">Total contábil</th></tr></thead>
-    <tbody>${months.map((m,i)=>{const x=despOpMonth(m);return x?`<tr><td><strong>${monthLabels[i]}</strong></td><td class="val neg" style="font-weight:700">${fmtC(x.logisticaDre)}</td><td class="val neg">${fmtC(x.transp)}</td><td class="val neg">${fmtC(x.correios)}</td><td class="val pos">${fmtC(x.restituido||0)}</td><td class="val">${fmtC(x.transpLiquido)}</td><td class="val neg">${fmtC(x.ats)}</td><td class="val neg">${fmtC(x.descontos)}</td><td class="val neg" style="font-weight:700">${fmtC(x.total)}</td></tr>`:'';}).join('')}</tbody></table><div style="margin-top:10px;font-size:11px;color:var(--muted2)">O valor de “Transportadoras + Correios (DRE)” é a referência contábil e coincide com a visão financeira. Restituições e líquido gerencial são exibidos apenas como informação operacional, sem reduzir a DRE.</div></div>`:''}
+    <table class="tbl"><thead><tr><th>Mês</th><th class="val">Transportadoras</th><th class="val">Correios</th><th class="val">ATs</th><th class="val">Descontos</th><th class="val">Total operacional</th></tr></thead>
+    <tbody>${months.map((m,i)=>{const x=despOpMonth(m);return x?`<tr><td><strong>${monthLabels[i]}</strong></td><td class="val neg">${fmtC(x.transpLiquido)}</td><td class="val neg">${fmtC(x.correios)}</td><td class="val neg">${fmtC(x.ats)}</td><td class="val neg">${fmtC(x.descontos)}</td><td class="val neg" style="font-weight:700">${fmtC(x.total)}</td></tr>`:'';}).join('')}</tbody></table><div style="margin-top:10px;padding:10px 12px;background:var(--teal-dim);border-radius:8px;font-size:11px;color:var(--muted2)"><strong style="color:var(--teal)">ℹ️ Critério:</strong> Transportadoras considera o valor pago menos os reembolsos. No período, ${fmtC(data.transp)} pagos − ${fmtC(data.restituido)} reembolsados = ${fmtC(data.transpLiquido)} de despesa operacional com transportadoras. A diferença para a DRE corresponde aos reembolsos.</div></div>`:''}
   ${(()=>{const ns=isAll?Object.entries(DESP_OP_NOTAS):(DESP_OP_NOTAS[currentMonth]?[[currentMonth,DESP_OP_NOTAS[currentMonth]]]:[]);const lbl={jan:'Janeiro',abr:'Abril'};return ns.length?ns.map(([k,t])=>`<div class="nota-box" style="margin-top:16px"><p><strong>⚠ Nota — ${lbl[k]||k}:</strong> ${t}</p></div>`).join(''):'';})()}`;
 
   mkChart('dop-donut',{type:'doughnut',data:{labels:itens.map(i=>i.nome),datasets:[{data:itens.map(i=>i.val),backgroundColor:cores,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:8,font:{size:10}}}}}});
   if(isAll){
     mkChart('dop-bar',{type:'bar',data:{labels:monthLabels,datasets:[
-      {label:'Transportadoras + Correios (DRE)',data:serie('logisticaDre'),backgroundColor:'rgba(74,158,255,0.8)',borderRadius:3,borderSkipped:false},
+      {label:'Transportadoras',data:serie('transpLiquido'),backgroundColor:'rgba(74,158,255,0.8)',borderRadius:3,borderSkipped:false},
+      {label:'Correios',data:serie('correios'),backgroundColor:'rgba(66,148,167,0.8)',borderRadius:3,borderSkipped:false},
       {label:'ATs',data:serie('ats'),backgroundColor:'rgba(155,109,255,0.8)',borderRadius:3,borderSkipped:false},
       {label:'Descontos',data:serie('descontos'),backgroundColor:'rgba(255,107,107,0.8)',borderRadius:3,borderSkipped:false}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:8,padding:8,font:{size:9}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}}}});

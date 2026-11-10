@@ -240,7 +240,7 @@ log_obj = {
 }
 block.append("const LOGISTICA_DRE_OFICIAL=" + js(log_obj) + ";")
 block.append("Object.entries(LOGISTICA_DRE_OFICIAL).forEach(([m,v])=>Object.assign(DESP_OP[m]||(DESP_OP[m]={}),v));")
-block.append("DESP_OP_ITENS.splice(0,DESP_OP_ITENS.length,['logisticaDre','Transportadoras + Correios (DRE)'],['ats','Gastos com ATs'],['descontos','Descontos Concedidos']);")
+block.append("DESP_OP_ITENS.splice(0,DESP_OP_ITENS.length,['transpLiquido','Transportadoras'],['correios','Correios'],['ats','Gastos com ATs'],['descontos','Descontos Concedidos']);")
 block.append("EXEC.oct={novosQtd:5,novosVal:8150,distratosQtd:2,distratosVal:3855.42,reajustesAprovados:4,reajustesVal:298.06,receitaPontualTotal:19066.92,avanco:'SLA melhorou 3,2 p.p. e a frota voltou a crescer, com cinco novos veículos no mês.',risco:'SLA permanece abaixo de 85% e o Amazonas registrou TMA de 19,5 dias.'};")
 block.append("// ─── FIM ATUALIZAÇÃO OFICIAL — OUTUBRO/2026 ───────────────────────────")
 block_text = "\n".join(block) + "\n\n"
