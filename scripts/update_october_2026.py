@@ -189,8 +189,8 @@ oct_data = {
                 {"nome":"Maxwell","meses":[19,14,11,14,23,16,10,7,24,13]},
             ],
             "iva":[
-                {"nome":"Maxwell Gatti","iva":784.2,"pct":86.92,"patrimônios":34},
                 {"nome":"Aran Monteiro","iva":776.0,"pct":96.69,"patrimônios":22},
+                {"nome":"Maxwell Gatti","iva":719.2,"pct":85.97,"patrimônios":34},
                 {"nome":"Brandon David","iva":451.3,"pct":40.98,"patrimônios":13},
             ],
             "porModelo":[
@@ -200,7 +200,7 @@ oct_data = {
                 {"modelo":"R8","qtd":1},{"modelo":"X3","qtd":1},
             ],
         },
-        "horasTecnicos": 540.93, "patrimoniosAtendidos": 54, "mediaHorasProdutivas": 10.02,
+        "horasTecnicos": 527.93, "patrimoniosAtendidos": 54, "mediaHorasProdutivas": 10.02,
     },
 }
 
@@ -241,7 +241,7 @@ log_obj = {
 block.append("const LOGISTICA_DRE_OFICIAL=" + js(log_obj) + ";")
 block.append("Object.entries(LOGISTICA_DRE_OFICIAL).forEach(([m,v])=>Object.assign(DESP_OP[m]||(DESP_OP[m]={}),v));")
 block.append("DESP_OP_ITENS.splice(0,DESP_OP_ITENS.length,['logisticaDre','Transportadoras + Correios (DRE)'],['ats','Gastos com ATs'],['descontos','Descontos Concedidos']);")
-block.append("EXEC.oct={novosQtd:5,novosVal:8150,distratosQtd:2,distratosVal:3855.42,reajustesAprovados:4,reajustesVal:298.06,receitaPontualTotal:19066.92,avanco:'SLA melhorou 3,2 p.p. e a frota voltou a crescer, com cinco novos contratos no mês.',risco:'SLA permanece abaixo de 85% e o Amazonas registrou TMA de 19,5 dias.'};")
+block.append("EXEC.oct={novosQtd:5,novosVal:8150,distratosQtd:2,distratosVal:3855.42,reajustesAprovados:4,reajustesVal:298.06,receitaPontualTotal:19066.92,avanco:'SLA melhorou 3,2 p.p. e a frota voltou a crescer, com cinco novos veículos no mês.',risco:'SLA permanece abaixo de 85% e o Amazonas registrou TMA de 19,5 dias.'};")
 block.append("// ─── FIM ATUALIZAÇÃO OFICIAL — OUTUBRO/2026 ───────────────────────────")
 block_text = "\n".join(block) + "\n\n"
 
